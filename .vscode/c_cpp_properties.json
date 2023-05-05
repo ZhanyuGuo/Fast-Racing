@@ -1,0 +1,34 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/gzy/Workspace/Fast-Racing/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/gzy/Workspace/Fast-Racing/src/airsim_ros_pkgs/include/**",
+        "/home/gzy/Workspace/Fast-Racing/src/sfc/DecompROS/decomp_ros_utils/include/**",
+        "/home/gzy/Workspace/Fast-Racing/src/utils/uav_simulator/Utils/multi_map_server/include/**",
+        "/home/gzy/Workspace/Fast-Racing/src/octomap_server/include/**",
+        "/home/gzy/Workspace/Fast-Racing/src/path_searching/include/**",
+        "/home/gzy/Workspace/Fast-Racing/src/plan_manage/include/**",
+        "/home/gzy/Workspace/Fast-Racing/src/utils/uav_simulator/Utils/pose_utils/include/**",
+        "/home/gzy/Workspace/Fast-Racing/src/utils/quadrotor_msgs/include/**",
+        "/home/gzy/Workspace/Fast-Racing/src/utils/uav_simulator/so3_control/include/**",
+        "/home/gzy/Workspace/Fast-Racing/src/utils/uav_simulator/so3_disturbance_generator/include/**",
+        "/home/gzy/Workspace/Fast-Racing/src/utils/uav_simulator/so3_quadrotor_simulator/include/**",
+        "/home/gzy/Workspace/Fast-Racing/src/utils/traj_server/include/**",
+        "/home/gzy/Workspace/Fast-Racing/src/utils/uav_simulator/Utils/uav_utils/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}
