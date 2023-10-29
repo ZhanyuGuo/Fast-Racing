@@ -1,5 +1,5 @@
 #include "common/common_utils/StrictMode.hpp"
-STRICT_MODE_OFF //todo what does this do?
+STRICT_MODE_OFF
 #ifndef RPCLIB_MSGPACK
 #define RPCLIB_MSGPACK clmdep_msgpack
 #endif // !RPCLIB_MSGPACK
@@ -79,11 +79,12 @@ struct SimpleMatrix
 {
     int rows;
     int cols;
-    double* data;
+    double *data;
 
-    SimpleMatrix(int rows, int cols, double* data)
+    SimpleMatrix(int rows, int cols, double *data)
         : rows(rows), cols(cols), data(data)
-    {}
+    {
+    }
 };
 
 struct VelCmd
@@ -95,18 +96,18 @@ struct VelCmd
     msr::airlib::YawMode yaw_mode;
     std::string vehicle_name;
 
-    // VelCmd() : 
-    //     x(0), y(0), z(0), 
+    // VelCmd() :
+    //     x(0), y(0), z(0),
     //     vehicle_name("") {drivetrain = msr::airlib::DrivetrainType::MaxDegreeOfFreedom;
     //             yaw_mode = msr::airlib::YawMode();};
 
-    // VelCmd(const double& x, const double& y, const double& z, 
-    //         msr::airlib::DrivetrainType drivetrain, 
+    // VelCmd(const double& x, const double& y, const double& z,
+    //         msr::airlib::DrivetrainType drivetrain,
     //         const msr::airlib::YawMode& yaw_mode,
-    //         const std::string& vehicle_name) : 
-    //     x(x), y(y), z(z), 
-    //     drivetrain(drivetrain), 
-    //     yaw_mode(yaw_mode), 
+    //         const std::string& vehicle_name) :
+    //     x(x), y(y), z(z),
+    //     drivetrain(drivetrain),
+    //     yaw_mode(yaw_mode),
     //     vehicle_name(vehicle_name) {};
 };
 
@@ -118,9 +119,9 @@ struct GimbalCmd
 
     // GimbalCmd() : vehicle_name(vehicle_name), camera_name(camera_name), target_quat(msr::airlib::Quaternionr(1,0,0,0)) {}
 
-    // GimbalCmd(const std::string& vehicle_name, 
-    //         const std::string& camera_name, 
-    //         const msr::airlib::Quaternionr& target_quat) : 
+    // GimbalCmd(const std::string& vehicle_name,
+    //         const std::string& camera_name,
+    //         const msr::airlib::Quaternionr& target_quat) :
     //         vehicle_name(vehicle_name), camera_name(camera_name), target_quat(target_quat) {};
 };
 
@@ -133,8 +134,8 @@ public:
         CAR
     };
 
-    AirsimROSWrapper(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private, const std::string & host_ip);
-    ~AirsimROSWrapper() {}; 
+    AirsimROSWrapper(const ros::NodeHandle &nh, const ros::NodeHandle &nh_private, const std::string &host_ip);
+    ~AirsimROSWrapper(){};
 
     void initialize_airsim();
     void initialize_ros();
@@ -166,17 +167,16 @@ private:
         ros::Publisher global_gps_pub;
         ros::Publisher env_pub;
         airsim_ros_pkgs::Environment env_msg;
-        std::vector<SensorPublisher> sensor_pubs; 
+        std::vector<SensorPublisher> sensor_pubs;
         // handle lidar seperately for max performance as data is collected on its own thread/callback
         std::vector<SensorPublisher> lidar_pubs;
-        
+
         nav_msgs::Odometry curr_odom;
         sensor_msgs::NavSatFix gps_sensor_msg;
 
         std::vector<geometry_msgs::TransformStamped> static_tf_msg_vec;
 
         ros::Time stamp;
-        
 
         std::string odom_frame_id;
         /// Status
@@ -219,93 +219,93 @@ private:
     };
 
     /// ROS timer callbacks
-    void img_response_timer_cb(const ros::TimerEvent& event); // update images from airsim_client_ every nth sec
-    void drone_state_timer_cb(const ros::TimerEvent& event); // update drone state from airsim_client_ every nth sec
+    void img_response_timer_cb(const ros::TimerEvent &event); // update images from airsim_client_ every nth sec
+    void drone_state_timer_cb(const ros::TimerEvent &event);  // update drone state from airsim_client_ every nth sec
     // void drone_state_timer_cb(const ros::SteadyTimerEvent& event); // update drone state from airsim_client_ every nth sec
-    void lidar_timer_cb(const ros::TimerEvent& event);
+    void lidar_timer_cb(const ros::TimerEvent &event);
 
     /// ROS subscriber callbacks
-    void vel_cmd_world_frame_cb(const airsim_ros_pkgs::VelCmd::ConstPtr& msg, const std::string& vehicle_name);
-    void vel_cmd_body_frame_cb(const airsim_ros_pkgs::VelCmd::ConstPtr& msg, const std::string& vehicle_name);
+    void vel_cmd_world_frame_cb(const airsim_ros_pkgs::VelCmd::ConstPtr &msg, const std::string &vehicle_name);
+    void vel_cmd_body_frame_cb(const airsim_ros_pkgs::VelCmd::ConstPtr &msg, const std::string &vehicle_name);
 
-    void vel_cmd_group_body_frame_cb(const airsim_ros_pkgs::VelCmdGroup& msg);
-    void vel_cmd_group_world_frame_cb(const airsim_ros_pkgs::VelCmdGroup& msg);
+    void vel_cmd_group_body_frame_cb(const airsim_ros_pkgs::VelCmdGroup &msg);
+    void vel_cmd_group_world_frame_cb(const airsim_ros_pkgs::VelCmdGroup &msg);
 
-    void vel_cmd_all_world_frame_cb(const airsim_ros_pkgs::VelCmd& msg);
-    void vel_cmd_all_body_frame_cb(const airsim_ros_pkgs::VelCmd& msg);
+    void vel_cmd_all_world_frame_cb(const airsim_ros_pkgs::VelCmd &msg);
+    void vel_cmd_all_body_frame_cb(const airsim_ros_pkgs::VelCmd &msg);
 
     // void vel_cmd_body_frame_cb(const airsim_ros_pkgs::VelCmd& msg, const std::string& vehicle_name);
-    void gimbal_angle_quat_cmd_cb(const airsim_ros_pkgs::GimbalAngleQuatCmd& gimbal_angle_quat_cmd_msg);
-    void gimbal_angle_euler_cmd_cb(const airsim_ros_pkgs::GimbalAngleEulerCmd& gimbal_angle_euler_cmd_msg);
-    void rpy_thrust_cmd_cb(const mavros_msgs::AttitudeTarget& attitude_cmd_msg);
-    //hzchzc
+    void gimbal_angle_quat_cmd_cb(const airsim_ros_pkgs::GimbalAngleQuatCmd &gimbal_angle_quat_cmd_msg);
+    void gimbal_angle_euler_cmd_cb(const airsim_ros_pkgs::GimbalAngleEulerCmd &gimbal_angle_euler_cmd_msg);
+    void rpy_thrust_cmd_cb(const mavros_msgs::AttitudeTarget &attitude_cmd_msg);
+    // hzchzc
 
     // commands
-    void car_cmd_cb(const airsim_ros_pkgs::CarControls::ConstPtr& msg, const std::string& vehicle_name);
+    void car_cmd_cb(const airsim_ros_pkgs::CarControls::ConstPtr &msg, const std::string &vehicle_name);
     void update_commands();
 
     // state, returns the simulation timestamp best guess based on drone state timestamp, airsim needs to return timestap for environment
     ros::Time update_state();
-    void update_and_publish_static_transforms(VehicleROS* vehicle_ros);
+    void update_and_publish_static_transforms(VehicleROS *vehicle_ros);
     void publish_vehicle_state();
 
     /// ROS service callbacks
-    bool takeoff_srv_cb(airsim_ros_pkgs::Takeoff::Request& request, airsim_ros_pkgs::Takeoff::Response& response, const std::string& vehicle_name);
-    bool takeoff_group_srv_cb(airsim_ros_pkgs::TakeoffGroup::Request& request, airsim_ros_pkgs::TakeoffGroup::Response& response);
-    bool takeoff_all_srv_cb(airsim_ros_pkgs::Takeoff::Request& request, airsim_ros_pkgs::Takeoff::Response& response);
-    bool land_srv_cb(airsim_ros_pkgs::Land::Request& request, airsim_ros_pkgs::Land::Response& response, const std::string& vehicle_name);
-    bool land_group_srv_cb(airsim_ros_pkgs::LandGroup::Request& request, airsim_ros_pkgs::LandGroup::Response& response);
-    bool land_all_srv_cb(airsim_ros_pkgs::Land::Request& request, airsim_ros_pkgs::Land::Response& response);
-    bool reset_srv_cb(airsim_ros_pkgs::Reset::Request& request, airsim_ros_pkgs::Reset::Response& response);
+    bool takeoff_srv_cb(airsim_ros_pkgs::Takeoff::Request &request, airsim_ros_pkgs::Takeoff::Response &response, const std::string &vehicle_name);
+    bool takeoff_group_srv_cb(airsim_ros_pkgs::TakeoffGroup::Request &request, airsim_ros_pkgs::TakeoffGroup::Response &response);
+    bool takeoff_all_srv_cb(airsim_ros_pkgs::Takeoff::Request &request, airsim_ros_pkgs::Takeoff::Response &response);
+    bool land_srv_cb(airsim_ros_pkgs::Land::Request &request, airsim_ros_pkgs::Land::Response &response, const std::string &vehicle_name);
+    bool land_group_srv_cb(airsim_ros_pkgs::LandGroup::Request &request, airsim_ros_pkgs::LandGroup::Response &response);
+    bool land_all_srv_cb(airsim_ros_pkgs::Land::Request &request, airsim_ros_pkgs::Land::Response &response);
+    bool reset_srv_cb(airsim_ros_pkgs::Reset::Request &request, airsim_ros_pkgs::Reset::Response &response);
 
     /// ROS tf broadcasters
-    void publish_camera_tf(const ImageResponse& img_response, const ros::Time& ros_time, const std::string& frame_id, const std::string& child_frame_id);
-    void publish_odom_tf(const nav_msgs::Odometry& odom_msg);
+    void publish_camera_tf(const ImageResponse &img_response, const ros::Time &ros_time, const std::string &frame_id, const std::string &child_frame_id);
+    void publish_odom_tf(const nav_msgs::Odometry &odom_msg);
 
     /// camera helper methods
-    sensor_msgs::CameraInfo generate_cam_info(const std::string& camera_name, const CameraSetting& camera_setting, const CaptureSetting& capture_setting) const;
-    cv::Mat manual_decode_depth(const ImageResponse& img_response) const;
+    sensor_msgs::CameraInfo generate_cam_info(const std::string &camera_name, const CameraSetting &camera_setting, const CaptureSetting &capture_setting) const;
+    cv::Mat manual_decode_depth(const ImageResponse &img_response) const;
 
-    sensor_msgs::ImagePtr get_img_msg_from_response(const ImageResponse& img_response, const ros::Time curr_ros_time, const std::string frame_id);
-    sensor_msgs::ImagePtr get_depth_img_msg_from_response(const ImageResponse& img_response, const ros::Time curr_ros_time, const std::string frame_id);
-    
-    void process_and_publish_img_response(const std::vector<ImageResponse>& img_response_vec, const int img_response_idx, const std::string& vehicle_name);
+    sensor_msgs::ImagePtr get_img_msg_from_response(const ImageResponse &img_response, const ros::Time curr_ros_time, const std::string frame_id);
+    sensor_msgs::ImagePtr get_depth_img_msg_from_response(const ImageResponse &img_response, const ros::Time curr_ros_time, const std::string frame_id);
+
+    void process_and_publish_img_response(const std::vector<ImageResponse> &img_response_vec, const int img_response_idx, const std::string &vehicle_name);
 
     // methods which parse setting json ang generate ros pubsubsrv
     void create_ros_pubs_from_settings_json();
-    void append_static_camera_tf(VehicleROS* vehicle_ros, const std::string& camera_name, const CameraSetting& camera_setting);
-    void append_static_lidar_tf(VehicleROS* vehicle_ros, const std::string& lidar_name, const LidarSetting& lidar_setting);
-    void append_static_vehicle_tf(VehicleROS* vehicle_ros, const VehicleSetting& vehicle_setting);
-    void set_nans_to_zeros_in_pose(VehicleSetting& vehicle_setting) const;
-    void set_nans_to_zeros_in_pose(const VehicleSetting& vehicle_setting, CameraSetting& camera_setting) const;
-    void set_nans_to_zeros_in_pose(const VehicleSetting& vehicle_setting, LidarSetting& lidar_setting) const;
+    void append_static_camera_tf(VehicleROS *vehicle_ros, const std::string &camera_name, const CameraSetting &camera_setting);
+    void append_static_lidar_tf(VehicleROS *vehicle_ros, const std::string &lidar_name, const LidarSetting &lidar_setting);
+    void append_static_vehicle_tf(VehicleROS *vehicle_ros, const VehicleSetting &vehicle_setting);
+    void set_nans_to_zeros_in_pose(VehicleSetting &vehicle_setting) const;
+    void set_nans_to_zeros_in_pose(const VehicleSetting &vehicle_setting, CameraSetting &camera_setting) const;
+    void set_nans_to_zeros_in_pose(const VehicleSetting &vehicle_setting, LidarSetting &lidar_setting) const;
 
     /// utils. todo parse into an Airlib<->ROS conversion class
-    tf2::Quaternion get_tf2_quat(const msr::airlib::Quaternionr& airlib_quat) const;
-    msr::airlib::Quaternionr get_airlib_quat(const geometry_msgs::Quaternion& geometry_msgs_quat) const;
-    msr::airlib::Quaternionr get_airlib_quat(const tf2::Quaternion& tf2_quat) const;
-    nav_msgs::Odometry get_odom_msg_from_multirotor_state(const msr::airlib::MultirotorState& drone_state) const;
-    nav_msgs::Odometry get_odom_msg_from_truth_state(const msr::airlib::Kinematics::State& truth_state) const;
-    nav_msgs::Odometry get_odom_msg_from_car_state(const msr::airlib::CarApiBase::CarState& car_state) const;
-    airsim_ros_pkgs::CarState get_roscarstate_msg_from_car_state(const msr::airlib::CarApiBase::CarState& car_state) const;
-    msr::airlib::Pose get_airlib_pose(const float& x, const float& y, const float& z, const msr::airlib::Quaternionr& airlib_quat) const;
-    airsim_ros_pkgs::GPSYaw get_gps_msg_from_airsim_geo_point(const msr::airlib::GeoPoint& geo_point) const;
-    sensor_msgs::NavSatFix get_gps_sensor_msg_from_airsim_geo_point(const msr::airlib::GeoPoint& geo_point) const;
-    sensor_msgs::Imu get_imu_msg_from_airsim(const msr::airlib::ImuBase::Output& imu_data) const;
-    airsim_ros_pkgs::Altimeter get_altimeter_msg_from_airsim(const msr::airlib::BarometerBase::Output& alt_data) const;
-    sensor_msgs::Range get_range_from_airsim(const msr::airlib::DistanceSensorData& dist_data) const;
-    sensor_msgs::PointCloud2 get_lidar_msg_from_airsim(const msr::airlib::LidarData& lidar_data, const std::string& vehicle_name) const;
-    sensor_msgs::NavSatFix get_gps_msg_from_airsim(const msr::airlib::GpsBase::Output& gps_data) const;
-    sensor_msgs::MagneticField get_mag_msg_from_airsim(const msr::airlib::MagnetometerBase::Output& mag_data) const;
-    airsim_ros_pkgs::Environment get_environment_msg_from_airsim(const msr::airlib::Environment::State& env_data) const;
+    tf2::Quaternion get_tf2_quat(const msr::airlib::Quaternionr &airlib_quat) const;
+    msr::airlib::Quaternionr get_airlib_quat(const geometry_msgs::Quaternion &geometry_msgs_quat) const;
+    msr::airlib::Quaternionr get_airlib_quat(const tf2::Quaternion &tf2_quat) const;
+    nav_msgs::Odometry get_odom_msg_from_multirotor_state(const msr::airlib::MultirotorState &drone_state) const;
+    nav_msgs::Odometry get_odom_msg_from_truth_state(const msr::airlib::Kinematics::State &truth_state) const;
+    nav_msgs::Odometry get_odom_msg_from_car_state(const msr::airlib::CarApiBase::CarState &car_state) const;
+    airsim_ros_pkgs::CarState get_roscarstate_msg_from_car_state(const msr::airlib::CarApiBase::CarState &car_state) const;
+    msr::airlib::Pose get_airlib_pose(const float &x, const float &y, const float &z, const msr::airlib::Quaternionr &airlib_quat) const;
+    airsim_ros_pkgs::GPSYaw get_gps_msg_from_airsim_geo_point(const msr::airlib::GeoPoint &geo_point) const;
+    sensor_msgs::NavSatFix get_gps_sensor_msg_from_airsim_geo_point(const msr::airlib::GeoPoint &geo_point) const;
+    sensor_msgs::Imu get_imu_msg_from_airsim(const msr::airlib::ImuBase::Output &imu_data) const;
+    airsim_ros_pkgs::Altimeter get_altimeter_msg_from_airsim(const msr::airlib::BarometerBase::Output &alt_data) const;
+    sensor_msgs::Range get_range_from_airsim(const msr::airlib::DistanceSensorData &dist_data) const;
+    sensor_msgs::PointCloud2 get_lidar_msg_from_airsim(const msr::airlib::LidarData &lidar_data, const std::string &vehicle_name) const;
+    sensor_msgs::NavSatFix get_gps_msg_from_airsim(const msr::airlib::GpsBase::Output &gps_data) const;
+    sensor_msgs::MagneticField get_mag_msg_from_airsim(const msr::airlib::MagnetometerBase::Output &mag_data) const;
+    airsim_ros_pkgs::Environment get_environment_msg_from_airsim(const msr::airlib::Environment::State &env_data) const;
 
     // not used anymore, but can be useful in future with an unreal camera calibration environment
-    void read_params_from_yaml_and_fill_cam_info_msg(const std::string& file_name, sensor_msgs::CameraInfo& cam_info) const;
-    void convert_yaml_to_simple_mat(const YAML::Node& node, SimpleMatrix& m) const; // todo ugly
+    void read_params_from_yaml_and_fill_cam_info_msg(const std::string &file_name, sensor_msgs::CameraInfo &cam_info) const;
+    void convert_yaml_to_simple_mat(const YAML::Node &node, SimpleMatrix &m) const; // todo ugly
 
     // simulation time utility
-    ros::Time airsim_timestamp_to_ros(const msr::airlib::TTimePoint& stamp) const;
-    ros::Time chrono_timestamp_to_ros(const std::chrono::system_clock::time_point& stamp) const;
+    ros::Time airsim_timestamp_to_ros(const msr::airlib::TTimePoint &stamp) const;
+    ros::Time chrono_timestamp_to_ros(const std::chrono::system_clock::time_point &stamp) const;
 
 private:
     // subscriber / services for ALL robots
@@ -325,12 +325,12 @@ private:
     ros::ServiceServer reset_srvr_;
     ros::Publisher origin_geo_point_pub_; // home geo coord of drones
     ros::Publisher debug_pub_;
-    msr::airlib::GeoPoint origin_geo_point_;// gps coord of unreal origin 
+    msr::airlib::GeoPoint origin_geo_point_;       // gps coord of unreal origin
     airsim_ros_pkgs::GPSYaw origin_geo_point_msg_; // todo duplicate
 
     std::vector<VehicleSetting> vehicle_setting_vec_;
     AirSimSettingsParser airsim_settings_parser_;
-    std::unordered_map< std::string, std::unique_ptr< VehicleROS > > vehicle_name_ptr_map_;
+    std::unordered_map<std::string, std::unique_ptr<VehicleROS>> vehicle_name_ptr_map_;
     static const std::unordered_map<int, std::string> image_type_int_to_string_map_;
 
     bool is_vulkan_; // rosparam obtained from launch file. If vulkan is being used, we BGR encoding instead of RGB
@@ -353,7 +353,7 @@ private:
 
     // gimbal control
     bool has_gimbal_cmd_;
-    GimbalCmd gimbal_cmd_; 
+    GimbalCmd gimbal_cmd_;
 
     /// ROS tf
     const std::string AIRSIM_FRAME_ID = "world_ned";
@@ -363,7 +363,7 @@ private:
     std::string odom_frame_id_ = AIRSIM_ODOM_FRAME_ID;
     tf2_ros::TransformBroadcaster tf_broadcaster_;
     tf2_ros::StaticTransformBroadcaster static_tf_pub_;
-    
+
     bool isENU_ = false;
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;
@@ -380,7 +380,7 @@ private:
 
     typedef std::pair<std::vector<ImageRequest>, std::string> airsim_img_request_vehicle_name_pair;
     std::vector<airsim_img_request_vehicle_name_pair> airsim_img_request_vehicle_name_pair_vec_;
-    std::vector<image_transport::Publisher> image_pub_vec_; 
+    std::vector<image_transport::Publisher> image_pub_vec_;
     std::vector<ros::Publisher> cam_info_pub_vec_;
 
     std::vector<sensor_msgs::CameraInfo> camera_info_msg_vec_;
@@ -394,13 +394,12 @@ private:
     ros::Subscriber gimbal_angle_euler_cmd_sub_;
     ros::Subscriber rpy_thrust_sub_;
 
-    static constexpr char CAM_YML_NAME[]    = "camera_name";
-    static constexpr char WIDTH_YML_NAME[]  = "image_width";
+    static constexpr char CAM_YML_NAME[] = "camera_name";
+    static constexpr char WIDTH_YML_NAME[] = "image_width";
     static constexpr char HEIGHT_YML_NAME[] = "image_height";
-    static constexpr char K_YML_NAME[]      = "camera_matrix";
-    static constexpr char D_YML_NAME[]      = "distortion_coefficients";
-    static constexpr char R_YML_NAME[]      = "rectification_matrix";
-    static constexpr char P_YML_NAME[]      = "projection_matrix";
+    static constexpr char K_YML_NAME[] = "camera_matrix";
+    static constexpr char D_YML_NAME[] = "distortion_coefficients";
+    static constexpr char R_YML_NAME[] = "rectification_matrix";
+    static constexpr char P_YML_NAME[] = "projection_matrix";
     static constexpr char DMODEL_YML_NAME[] = "distortion_model";
-
 };

@@ -2,10 +2,10 @@
 #include "airsim_ros_wrapper.h"
 #include <ros/spinner.h>
 
-int main(int argc, char ** argv)
+int main(int argc, char **argv)
 {
     ros::init(argc, argv, "airsim_node");
-    ros::NodeHandle nh;//not be used 
+    ros::NodeHandle nh; // not be used
     ros::NodeHandle nh_private("~");
 
     std::string host_ip = "localhost";
@@ -25,4 +25,4 @@ int main(int argc, char ** argv)
     ros::spin();
 
     return 0;
-} 
+}
