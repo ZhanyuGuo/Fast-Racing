@@ -1,35 +1,40 @@
-#include<plan_manage/se3_planner.h>
+#include <plan_manage/se3_planner.h>
 
 MavGlobalPlanner::MavGlobalPlanner(Config &conf, ros::NodeHandle &nh_)
     : config(conf), nh(nh_),
       visualization(config, nh),
       jps_pathfinder(true)
 {
-    point_cloud_sub_ = nh.subscribe("PointCloud_in", 10, &MavGlobalPlanner::point_cloud_cb, this,ros::TransportHints().tcpNoDelay());
+    point_cloud_sub_ = nh.subscribe("PointCloud_in", 10, &MavGlobalPlanner::point_cloud_cb, this, ros::TransportHints().tcpNoDelay());
     _traj_pub = nh.advertise<quadrotor_msgs::PolynomialTrajectory>("trajectory", 50);
     map_util = std::make_shared<VoxelMapUtil>();
     map_util->setParam(nh);
     jps_pathfinder.setParam(nh);
     jps_pathfinder.setMapUtil(map_util);
-
 }
+
 MavGlobalPlanner::~MavGlobalPlanner()
 {
     delete obs_pointer;
 }
-void MavGlobalPlanner::point_cloud_cb(const sensor_msgs::PointCloud2 & pointcloud_map){
-    if(has_map) return;
+
+void MavGlobalPlanner::point_cloud_cb(const sensor_msgs::PointCloud2 &pointcloud_map)
+{
+    if (has_map)
+        return;
     ROS_INFO("please wait~");
     sensor_msgs::PointCloud cloud;
-    sensor_msgs::convertPointCloud2ToPointCloud(pointcloud_map,cloud);
+    sensor_msgs::convertPointCloud2ToPointCloud(pointcloud_map, cloud);
     cloud.header.frame_id = config.odomFrame;
-    obs_pointer  = new vec_Vec3f();
+    obs_pointer = new vec_Vec3f();
     *obs_pointer = DecompROS::cloud_to_vec(cloud);
     has_map = true;
     ROS_WARN("POINT BE BUILD!!!!!!!!!!!");
 }
-quadrotor_msgs::PolynomialTrajectory MavGlobalPlanner::traj2msg(Trajectory traj){
-    static int count=0;
+
+quadrotor_msgs::PolynomialTrajectory MavGlobalPlanner::traj2msg(Trajectory traj)
+{
+    static int count = 0;
     quadrotor_msgs::PolynomialTrajectory traj_msg;
     traj_msg.header.seq = count;
     traj_msg.header.stamp = ros::Time::now();
@@ -40,14 +45,14 @@ quadrotor_msgs::PolynomialTrajectory MavGlobalPlanner::traj2msg(Trajectory traj)
     traj_msg.num_segment = traj.getPieceNum();
     traj_msg.start_yaw = 0;
     traj_msg.final_yaw = 0;
-    for(unsigned int i=0; i<traj_msg.num_segment; i++)
+    for (unsigned int i = 0; i < traj_msg.num_segment; i++)
     {
         for (unsigned int j = 0; j <= traj[i].getOrder(); j++)
         {
-          CoefficientMat coemat = traj[i].normalizePosCoeffMat();
-          traj_msg.coef_x.push_back(coemat(0,j));
-          traj_msg.coef_y.push_back(coemat(1,j));
-          traj_msg.coef_z.push_back(coemat(2,j));
+            CoefficientMat coemat = traj[i].normalizePosCoeffMat();
+            traj_msg.coef_x.push_back(coemat(0, j));
+            traj_msg.coef_y.push_back(coemat(1, j));
+            traj_msg.coef_z.push_back(coemat(2, j));
         }
         traj_msg.time.push_back(traj[i].getDuration());
         traj_msg.order.push_back(traj[i].getOrder());
@@ -56,7 +61,6 @@ quadrotor_msgs::PolynomialTrajectory MavGlobalPlanner::traj2msg(Trajectory traj)
     count++;
     return traj_msg;
 }
-
 
 Visualization::Visualization(Config &conf, ros::NodeHandle &nh_)
     : config(conf), nh(nh_)
@@ -171,8 +175,8 @@ void Visualization::visualizeQuadrotor(const Trajectory &traj, const int samples
     quadrotorMarker.color.g = 0.0;
     quadrotorMarker.color.b = 0.0;
     quadrotorMarker.color.a = 0.0;
-    quadrotorMarker.scale.x = (config.horizHalfLen+config.safeMargin*3.3+0.2) * sqrt(2.0);
-    quadrotorMarker.scale.y = (config.horizHalfLen+config.safeMargin*3.3+0.2) * sqrt(2.0);
+    quadrotorMarker.scale.x = (config.horizHalfLen + config.safeMargin * 3.3 + 0.2) * sqrt(2.0);
+    quadrotorMarker.scale.y = (config.horizHalfLen + config.safeMargin * 3.3 + 0.2) * sqrt(2.0);
     quadrotorMarker.scale.z = config.vertHalfLen * 8.0;
 
     quadrotorMarker.action = visualization_msgs::Marker::DELETEALL;
@@ -182,20 +186,20 @@ void Visualization::visualizeQuadrotor(const Trajectory &traj, const int samples
     quadrotorMarkers.markers.clear();
 
     // double dt = traj.getTotalDuration() / samples;
-    //hzc30
-    double dt = 5.0/samples;
+    // hzc30
+    double dt = 5.0 / samples;
     geometry_msgs::Point point;
     Eigen::Vector3d pos;
     Eigen::Matrix3d rotM;
     Eigen::Quaterniond quat;
     for (int i = 0; i <= samples; i++)
     {
-        pos = traj.getPos(6+dt * i);//4.5
+        pos = traj.getPos(6 + dt * i); // 4.5
         quadrotorMarker.pose.position.x = pos(0);
         quadrotorMarker.pose.position.y = pos(1);
         quadrotorMarker.pose.position.z = pos(2);
         // traj.getRotation(6+dt * i, M_PI_4, config.gravAcc, rotM);hzc
-        traj.getRotation(6+dt * i, M_PI_2, config.gravAcc, rotM);
+        traj.getRotation(6 + dt * i, M_PI_2, config.gravAcc, rotM);
         quat = Eigen::Quaterniond(rotM);
         quadrotorMarker.pose.orientation.w = quat.w();
         quadrotorMarker.pose.orientation.x = quat.x();

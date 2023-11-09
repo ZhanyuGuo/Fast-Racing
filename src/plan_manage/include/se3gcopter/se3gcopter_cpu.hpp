@@ -39,7 +39,7 @@ class MINCO_S3
 public:
     MINCO_S3() = default;
     ~MINCO_S3() { A.destroy(); }
-      //my 
+    // my
     // double compute_time = 0;
 private:
     int N;
@@ -55,10 +55,7 @@ private:
     Eigen::VectorXd T4;
     Eigen::VectorXd T5;
     Eigen::MatrixXd gdC;
-    double* cost_block;
-    
-
-  
+    double *cost_block;
 
 private:
     template <typename EIGENVEC>
@@ -257,7 +254,7 @@ private:
                 beta3 << 0.0, 0.0, 0.0, 6.0, 24.0 * s1, 60.0 * s2;
                 beta4 << 0.0, 0.0, 0.0, 0.0, 24.0, 120.0 * s1;
                 alpha = 1.0 / cons(i) * j;
-                pos = c.transpose() * beta0;//c_0->c_5
+                pos = c.transpose() * beta0; // c_0->c_5
                 vel = c.transpose() * beta1;
                 acc = c.transpose() * beta2;
                 jer = c.transpose() * beta3;
@@ -266,11 +263,11 @@ private:
                 h = acc;
                 h(2) += gAcc;
                 normalizeFDF(h, zB, dzB);
-                //Zb
+                // Zb
                 czB << 0.0, zB(2), -zB(1);
                 cdzB << Eigen::RowVector3d::Zero(), dzB.row(2), -dzB.row(1);
                 normalizeFDF(czB, yB, dnczB);
-                //Yb
+                // Yb
                 xB = yB.cross(zB);
                 dyB = dnczB * cdzB;
                 dxB.col(0) = dyB.col(0).cross(zB) + yB.cross(dzB.col(0));
@@ -355,7 +352,6 @@ private:
                     gdT(i) += omg * (ci(1) * violaVelPenaD * gradViolaVt * step +
                                      ci(1) * violaVelPena / cons(i));
                     pena += omg * step * ci(1) * violaVelPena;
-                    
                 }
 
                 if (violaThrl > 0.0)
@@ -579,7 +575,7 @@ private:
     // Fixed total time
     double sumT;
 
-    //Minimum Jerk Optimizer
+    // Minimum Jerk Optimizer
     MINCO_S3 jerkOpt;
 
     // Temp variables for problem solving
@@ -692,7 +688,7 @@ private:
                                ? (sqrt(2.0 * vecT(i) - 1.0) - 1.0)
                                : (1.0 - sqrt(2.0 / vecT(i) - 1.0));
                     /*
-                    
+
                     t  = 2/[(tau-1)^2+1] tau<0
                        = 1/2[(tau+1)^2+1] tau>=0
                     */
@@ -989,8 +985,8 @@ private:
         proxyGradT.array() += rh;
 
         mergeToCoarseGradT(obj.intervals, proxyGradT);
-        //grad of T
-        //T,P->tau kesi
+        // grad of T
+        // T,P->tau kesi
         addLayerTGrad(t, proxyGradT, obj.softT, obj.sumT, obj.c2dfm);
         addLayerPGrad(p, obj.idxVs, obj.cfgVs, obj.gdInPs, gradp);
 
@@ -1098,7 +1094,7 @@ public:
         if (softT)
         {
             rho = rh;
-            sumT = 1.0;//optimize total time
+            sumT = 1.0; // optimize total time
         }
         else
         {
@@ -1113,7 +1109,7 @@ public:
         coarseN = cfgHs.size();
         for (int i = 0; i < coarseN; i++)
         {
-            cfgHs[i].topRows<3>().colwise().normalize();//6*n
+            cfgHs[i].topRows<3>().colwise().normalize(); // 6*n
         }
         if (!extractVs(cfgHs, cfgVs))
         {
@@ -1121,14 +1117,14 @@ public:
         }
 
         intervals.resize(coarseN);
-        gridMesh(iState, fState, cfgVs, gridRes, intervals);//cfgVs dimension:2n-1
+        gridMesh(iState, fState, cfgVs, gridRes, intervals); // cfgVs dimension:2n-1
         fineN = intervals.sum();
         cons.resize(fineN);
         cons.setConstant(itgSpaces);
 
         idxVs.resize(fineN - 1);
         idxHs.resize(fineN);
-        dimFreeT = softT ? coarseN : coarseN - 1;//softT is true tau size is n
+        dimFreeT = softT ? coarseN : coarseN - 1; // softT is true tau size is n
         dimFreeP = 0;
         int offset = 0, interval;
         for (int i = 0; i < coarseN; i++)
@@ -1179,8 +1175,7 @@ public:
         gdInPs.resize(3, fineN - 1);
         jerkOpt.reset(iniState, finState, fineN);
         //
-        //hzcmy load param
-    
+        // hzcmy load param
 
         return true;
     }
@@ -1234,7 +1229,7 @@ public:
         Eigen::Map<Eigen::VectorXd> t(x, dimFreeT);
         Eigen::Map<Eigen::VectorXd> p(x + dimFreeT, dimFreeP);
 
-        setInitial(cfgVs, intervals, coarseT, innerP); //initialize the waypoint and segment T
+        setInitial(cfgVs, intervals, coarseT, innerP); // initialize the waypoint and segment T
 
         backwardT(coarseT, t, softT, c2dfm);
         backwardP(innerP, idxVs, cfgVs, p);

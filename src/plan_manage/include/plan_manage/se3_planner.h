@@ -26,12 +26,10 @@
 #include <std_msgs/Float64.h>
 #include "se3gcopter/trajectory.hpp"
 
-using namespace std;        
+using namespace std;
 using namespace JPS;
 struct Config
 {
-
-
     std::string odomFrame;
 
     // Params
@@ -100,58 +98,54 @@ struct Config
 class Visualization
 {
 public:
-  Visualization(Config &conf, ros::NodeHandle &nh_);
+    Visualization(Config &conf, ros::NodeHandle &nh_);
 
-  Config config;
-  ros::NodeHandle nh;
-  
-  ros::Publisher trajPub;
-  ros::Publisher ellipsoidPub;
-  ros::Publisher quadrotorPub;
-  ros::Publisher hPolyPub;
-  ros::Publisher tiltRatePub;
-  ros::Publisher thrMagPub;
+    Config config;
+    ros::NodeHandle nh;
 
-  void visualize(const Trajectory &traj, const int samples = 1000);
-  void visualizeEllipsoid(const Trajectory &traj, const int samples = 1000);
-  void visualizeQuadrotor(const Trajectory &traj, const int samples = 1000);
-  void visualizePolyH(const vec_E<Polyhedron3D> &polyhedra);
-  void visualizeProfile(const Trajectory &traj, const double &t);
+    ros::Publisher trajPub;
+    ros::Publisher ellipsoidPub;
+    ros::Publisher quadrotorPub;
+    ros::Publisher hPolyPub;
+    ros::Publisher tiltRatePub;
+    ros::Publisher thrMagPub;
+
+    void visualize(const Trajectory &traj, const int samples = 1000);
+    void visualizeEllipsoid(const Trajectory &traj, const int samples = 1000);
+    void visualizeQuadrotor(const Trajectory &traj, const int samples = 1000);
+    void visualizePolyH(const vec_E<Polyhedron3D> &polyhedra);
+    void visualizeProfile(const Trajectory &traj, const double &t);
 };
 
 class MavGlobalPlanner
 {
 public:
-  MavGlobalPlanner(Config &conf, ros::NodeHandle &nh_);
-  ~MavGlobalPlanner();
+    MavGlobalPlanner(Config &conf, ros::NodeHandle &nh_);
+    ~MavGlobalPlanner();
 
-  Config config;
-  ros::NodeHandle nh;
+    Config config;
+    ros::NodeHandle nh;
 
-  ros::Subscriber targetSub;
-  ros::Subscriber point_cloud_sub_;
-  void targetCallBack(const geometry_msgs::PoseStamped::ConstPtr &msg);
+    ros::Subscriber targetSub;
+    ros::Subscriber point_cloud_sub_;
+    void targetCallBack(const geometry_msgs::PoseStamped::ConstPtr &msg);
 
-  ros::Publisher cloud_pub;
-  ros::Publisher path_pub;
-  ros::Publisher _traj_pub;
+    ros::Publisher cloud_pub;
+    ros::Publisher path_pub;
+    ros::Publisher _traj_pub;
 
-  vec_Vec3f *obs_pointer;
-  std::shared_ptr<VoxelMapUtil> map_util;
-  JPSPlanner3D jps_pathfinder;
-  Visualization visualization;
-  ros::Time lastIniStamp;
-  quadrotor_msgs::PolynomialTrajectory traj2msg(Trajectory traj);
-  bool has_map_(){return has_map;};
-  void plan(const Eigen::MatrixXd &iniState, const Eigen::MatrixXd &finState,std::vector<Eigen::Vector3d>* wp_list = NULL);
+    vec_Vec3f *obs_pointer;
+    std::shared_ptr<VoxelMapUtil> map_util;
+    JPSPlanner3D jps_pathfinder;
+    Visualization visualization;
+    ros::Time lastIniStamp;
+    quadrotor_msgs::PolynomialTrajectory traj2msg(Trajectory traj);
+    bool has_map_() { return has_map; };
+    void plan(const Eigen::MatrixXd &iniState, const Eigen::MatrixXd &finState, std::vector<Eigen::Vector3d> *wp_list = NULL);
+
 private:
-  bool has_map = false;
-  void point_cloud_cb(const sensor_msgs::PointCloud2 & pointcloud_map);
-  
- 
+    bool has_map = false;
+    void point_cloud_cb(const sensor_msgs::PointCloud2 &pointcloud_map);
 };
-
-
-
 
 #endif
